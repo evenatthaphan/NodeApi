@@ -198,6 +198,17 @@ router.post("/voteimage/elo", async (req, res) => {
   );
 });
 
+
+router.get("/all", async (req, res) => {
+  const sql = "select * from vote";
+  conn.query(sql, (err, result) => {
+    res.status(200);
+    res.json(result);
+    console.log(JSON.stringify(result));
+  });
+  // res.send("Method GET in index.ts");
+});
+
 // router.post("/voteimage/elo/:imageID_1/:imageID_2/:voteCount1/:voteCount2", async (req, res) => {
 //   const imageID_1 = req.params.imageID_1;
 //   const imageID_2 = req.params.imageID_2;
