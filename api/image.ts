@@ -104,7 +104,7 @@ router.post("/:id", fileUpload.diskLoader.single("Image"), async (req, res) => {
 //get top 10
 router.get("/top10", async (req, res) => {
   const sql = `SELECT image.*, user.username, user.avatar , vote.* 
-  FROM image JOIN user ON image.userID = user.userID JOIN vote ON image.imageID = vote.imageID WHERE vote.voteDate = CURRENT_DATE() ORDER BY vote.voteScor DESC LIMIT 10;`;
+  FROM image JOIN user ON image.userID = user.userID JOIN vote ON image.imageID = vote.imageID WHERE vote.voteDate = CURRENT_DATE() ORDER BY vote.voteScore DESC LIMIT 10;`;
 
   conn.query(sql, (err, result) => {
     if (err) {
