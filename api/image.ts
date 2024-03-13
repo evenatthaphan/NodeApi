@@ -81,7 +81,7 @@ router.post("/:id", fileUpload.diskLoader.single("Image"), async (req, res) => {
   const name_image = req.body.Name_image;
   const fileDate = req.file?.buffer;
   const filename = fileUpload.filename;
-  const filePath = `http://localhost:3000/upload/${filename}`; // กำหนด url
+  const filePath = `http://nodeapi-uxch.onrender.com/upload/${filename}`; // กำหนด url
 
   try {
     let image: ImagePostRequest = req.body;
@@ -95,6 +95,7 @@ router.post("/:id", fileUpload.diskLoader.single("Image"), async (req, res) => {
       file_path: filePath,
       Name_image: name_image,
     });
+
   } catch (err) {
     console.error("Error inserting iame:", err);
     res.status(500).send("Error insert image");
