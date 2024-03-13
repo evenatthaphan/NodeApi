@@ -95,7 +95,6 @@ router.post("/:id", fileUpload.diskLoader.single("Image"), async (req, res) => {
       file_path: filePath,
       Name_image: name_image,
     });
-
   } catch (err) {
     console.error("Error inserting iame:", err);
     res.status(500).send("Error insert image");
@@ -104,8 +103,8 @@ router.post("/:id", fileUpload.diskLoader.single("Image"), async (req, res) => {
 
 //get top 10
 router.get("/top10", async (req, res) => {
-  const sql = `SELECT image.*, user.username, user.avatar 
-  FROM image JOIN user ON image.userID = user.userID  ORDER BY image.voteCount DESC LIMIT 10;`;
+  const sql = `SELECT image.*, user.username, user.avatar , vote.* 
+  FROM image JOIN user ON image.userID = user.userID JOIN vote ON image.imageID = vote.imageID WHERE vote.voteDate = CURRENT_DATE() ORDER BY vote.voteScor DESC LIMIT 10;`;
 
   conn.query(sql, (err, result) => {
     if (err) {
@@ -116,8 +115,6 @@ router.get("/top10", async (req, res) => {
   });
   // res.send("Method GET in index.ts");
 });
-
-
 
 //get image by userID
 router.get("/getimage/:id", async (req, res) => {
@@ -135,7 +132,6 @@ router.get("/getimage/:id", async (req, res) => {
     }
   });
 });
-
 
 router.get("/top10noid", async (req, res) => {
   const sql = "SELECT * FROM image ORDER BY voteCount DESC LIMIT 10";
