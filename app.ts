@@ -27,6 +27,7 @@ app.use(bodyParser.json());
 app.use("/show", image);
 // app.use("/", image)
 
+app.use("/rank",image);
 
 app.use("/", user);
 app.use("/login", user);
