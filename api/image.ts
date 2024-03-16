@@ -46,60 +46,8 @@ router.get("/randompicture", async (req, res) => {
   );
 });
 
-class FileMiddleware {
-  filename = "";
-  //create multer object to save file in disk
-  public readonly diskLoader = multer({
-    //diskStorage = save to disk
-    storage: multer.diskStorage({
-      //destination = folder to be saved
-      //folder uploads in this project
-      destination: (_req, _file, cb) => {
-        cb(null, path.join(__dirname, "../uploads"));
-      },
-      //define file name to be saved
-      filename: (req, file, cb) => {
-        //unique file name = date + random number
-        const uniqueSuffix =
-          Date.now() + "-" + Math.round(Math.random() * 10000);
-        this.filename = uniqueSuffix + "." + file.originalname.split(".").pop();
-        cb(null, this.filename);
-      },
-    }),
-    //limit file size to be uploaded
-    limits: {
-      fileSize: 67108864, // 64 MByte
-    },
-  });
-}
 
-const fileUpload = new FileMiddleware();
-//use fileupload object to handle uploading file
-router.post("/:id", fileUpload.diskLoader.single("Image"), async (req, res) => {
-  // 1. read file data
-  const id = req.params.id;
-  const name_image = req.body.Name_image;
-  const fileDate = req.file?.buffer;
-  const filename = fileUpload.filename;
-  const filePath = `http://nodeapi-uxch.onrender.com/upload/${filename}`; // กำหนด url
 
-  try {
-    let image: ImagePostRequest = req.body;
-    let sql =
-      "insert into image (userID, imageURL, uploadDate, imageName) values (?, ?, now(), ?)";
-    conn.query(sql, [id, filePath, name_image]);
-
-    console.log("Image inserted successfully");
-    res.json({
-      filename: filename,
-      file_path: filePath,
-      Name_image: name_image,
-    });
-  } catch (err) {
-    console.error("Error inserting iame:", err);
-    res.status(500).send("Error insert image");
-  }
-});
 
 //get top 10
 router.get("/top10", async (req, res) => {

@@ -37,7 +37,7 @@ app.use("/update", user);
 app.use("/vote", vote); 
 app.use("/get", vote); 
 
-app.use("/upload", image); 
+app.use("/upload", upload); 
 // app.use("/uploads", express.static("uploads"));
 
 app.use('/upload', express.static(path.join(__dirname, 'uploads')));

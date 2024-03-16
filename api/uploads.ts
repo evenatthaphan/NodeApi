@@ -1,114 +1,69 @@
 import express from "express";
-import multer from "multer";
 import path from "path";
+import multer from "multer";
+import { conn } from "../dbconnect";
+import { ImagePostRequest } from "../model/data_post_request";
+// import mysql from "mysql";
 
-//create router of this API
 export const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.send("Method GET in uploads.ts");
-});
-
-//บันทึกลงในเครื่อง
-// class FileMiddleware {
-//     filename = "";
-//     //create multer object to save file in disk
-//     public readonly diskLoader = multer({
-//       //diskStorage = save to disk
-//       storage: multer.diskStorage({
-//         //destination = folder to be saved
-//         //folder uploads in this project
-//         destination: (_req, _file, cb) => {
-//           cb(null, path.join(__dirname, "../uploads"));
-//         },
-//         //define file name to be saved
-//         filename: (req, file, cb) => {
-//             //unique file name = date + random number
-//           const uniqueSuffix =
-//             Date.now() + "-" + Math.round(Math.random() * 10000);
-//           this.filename = uniqueSuffix + "." + file.originalname.split(".").pop();
-//           cb(null, this.filename);
-//         },
-//       }),
-//       //limit file size to be uploaded
-//       limits: {
-//         fileSize: 67108864, // 64 MByte
-//       },
-//     });
-//   }
-
-// //Post Upload
-// const fileUpload = new FileMiddleware();
-// //use fileupload object to handle uploading file
-// router.post("/",fileUpload.diskLoader.single("file"),(req, res)=>{
-//     res.status(200).json(
-//         {
-//             filename : "/uploads/" + fileUpload.filename
-//         }
-//     )
-// });
-
-//Define configuletion
-const firebaseConfig = {
-  apiKey: "AIzaSyC2ZW7nOQKkrQwVM0qfSBKWwDWLeFqZev4",
-  authDomain: "tripbooking-app-eve.firebaseapp.com",
-  projectId: "tripbooking-app-eve",
-  storageBucket: "tripbooking-app-eve.appspot.com",
-  messagingSenderId: "738801310521",
-  appId: "1:738801310521:web:71bb8bcf00d1cf84da26e8",
-  measurementId: "G-28B38MSGSB",
-};
-//import libs
+//เชื่อม firebase
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import {
-  getStorage,
-  ref,
-  getDownloadURL,
-  uploadBytesResumable,
-} from "firebase/storage";
-//start connecting to firebase
-initializeApp(firebaseConfig);
+// import { getAnalytics } from "firebase/analytics";
+import { getStorage, ref,uploadBytesResumable,getDownloadURL} from "firebase/storage";
 
-//create object
+const firebaseConfig = {
+  apiKey: "AIzaSyCNAXKjHaISwfyPpPR9MIV3ebxchs2Pgxo",
+  authDomain: "anime-mash---app---eve.firebaseapp.com",
+  projectId: "anime-mash---app---eve",
+  storageBucket: "anime-mash---app---eve.appspot.com",
+  messagingSenderId: "61740520109",
+  appId: "1:61740520109:web:c841c429bd225ec814ac24",
+  measurementId: "G-RG8GHMN3G5"
+};
+
+// Initialize Firebase
+initializeApp(firebaseConfig);
 const storage = getStorage();
+
 
 class FileMiddleware {
   filename = "";
-  //create multer object to save file in disk
   public readonly diskLoader = multer({
-    //diskStorage = save to disk
-    storage: multer.memoryStorage(),
-    //limit file size to be uploaded
-    limits: {
-      fileSize: 67108864, // 64 MByte
-    },
-  });
+    //
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 67108864, // 64 MByte
+  },
+});
 }
 
-//Post Upload
-const fileUpload = new FileMiddleware();
-//use fileupload object to handle uploading file
-router.post("/", fileUpload.diskLoader.single("file"), async (req, res) => {
-  //create filename
-  const filename = Math.round(Math.random() * 10000) + ".png";
-  //set name to be saved on firebase storage
-  const storageRef = ref(storage, "images/" + filename);
-  //set detail of file to be uploaded
-  const metadata = {
-    contentType: req.file!.mimetype,
-  };
-  //upload to storage
-  const snapshot = await uploadBytesResumable(
-    storageRef,
-    req.file!.buffer,
-    metadata
-  );
+const fileUpload = new FileMiddleware(); 
+router.post("/", fileUpload.diskLoader.single("Photo"), async (req, res) => {
+  try {
+    // อัพโหลดรูปภาพไปยัง Firebase Storage
+    const filename = Date.now() + "-" + Math.round(Math.random() * 1000) + ".png";
+    const storageRef = ref(storage, "/images/" + filename);
+    const metadata = { contentType: req.file!.mimetype };
+    const snapshot = await uploadBytesResumable(storageRef, req.file!.buffer, metadata);
+    const url = await getDownloadURL(snapshot.ref);
 
-  //get url of image from storage
+    // บันทึกรูปภาพลงใน Firebase Storage และรับ URL ของรูปภาพ
+    const Photo = url;
 
-  
-  const downloadurl = await getDownloadURL(snapshot.ref);
-  res.status(200).json({
-    filename: downloadurl,
-  });
+    // บันทึกข้อมูลลงในฐานข้อมูล MySQL
+    const UserID: ImagePostRequest = req.body;
+    const sql = "INSERT INTO image (imageID, userID, imageURL, uploadDate, imageName) VALUES (?, ?, ?, NOW(), ? )";
+    conn.query(sql, [UserID.userID, UserID.imageName, Photo], (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Error inserting user' });
+      }
+      res.status(201).json({ Photo: Photo, result });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error uploading image and inserting user' });
+  }
 });
