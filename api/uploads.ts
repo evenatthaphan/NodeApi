@@ -55,7 +55,7 @@ router.post("/", fileUpload.diskLoader.single("Photo"), async (req, res) => {
     // บันทึกข้อมูลลงในฐานข้อมูล MySQL
     const UserID: ImagePostRequest = req.body;
     const sql = "INSERT INTO image (imageID, userID, imageURL, uploadDate, imageName) VALUES (?, ?, ?, NOW(), ? )";
-    conn.query(sql, [UserID.userID, UserID.imageName, Photo], (err, result) => {
+    conn.query(sql, [UserID.userID, Photo ,UserID.imageName], (err, result) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ error: 'Error inserting user' });
