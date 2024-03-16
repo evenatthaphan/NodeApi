@@ -144,7 +144,7 @@ router.get('/get/diff', (req, res) => {
       }
 
       // ดึงข้อมูลรูปภาพและคะแนนหลังการโหวตของวันปัจจุบัน
-      const sqlAfter = `SELECT * FROM Vote WHERE voteDate = CURDATE() ORDER BY voteScore DESC LIMIT 10`;
+      const sqlAfter = `SELECT * FROM vote WHERE voteDate = CURDATE() ORDER BY voteScore DESC LIMIT 10`;
       conn.query({sql: sqlAfter, timeout: 60000}, (err, afterResults) => {
           if (err) {
               console.error(err);
