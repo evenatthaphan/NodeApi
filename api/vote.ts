@@ -213,13 +213,13 @@ router.get("/all", async (req, res) => {
 
 
 
-router.get("/score/statistics",(req, res) => {
+router.get("/score/statistics/:id",(req, res) => {
   const username = req.query.username;
   console.log(username);
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 7);
-  const yesterdayDay = yesterday.getDate();
+  const yesterdayDay = yesterday.getDate() + 1;
   console.log(yesterdayDay);
   const yesterdayMonth = yesterday.getMonth() + 1;
   const yesterdayYear = yesterday.getFullYear();
