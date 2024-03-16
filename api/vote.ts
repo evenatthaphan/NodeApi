@@ -248,8 +248,8 @@ router.get("/all", async (req, res) => {
 // });
 
 
-router.get("/score/statistics/:id", (req, res) => {
-  const imageID = req.params.id;
+router.get("/statistics", (req, res) => {
+  const imageID = req.query.imageID;
   console.log(imageID);
 
   const yesterday = new Date();
