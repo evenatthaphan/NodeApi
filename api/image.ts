@@ -131,3 +131,37 @@ router.get("/rank", async (req, res) => {
     }
   });
 });
+
+
+
+router.get('/get/diff', (req, res) => {
+  // ดึงข้อมูลรูปภาพและคะแนนก่อนการโหวตของวันก่อนหน้า
+  const sqlBefore = `SELECT * FROM vote WHERE voteDate = CURDATE() - INTERVAL 1 DAY ORDER BY voteScore DESC`;
+  conn.query({sql: sqlBefore, timeout: 60000}, (err, beforeResults) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Error fetching photos for the previous day' });
+      }
+
+      // ดึงข้อมูลรูปภาพและคะแนนหลังการโหวตของวันปัจจุบัน
+      const sqlAfter = `SELECT * FROM Vote WHERE voteDate = CURDATE() ORDER BY voteScore DESC LIMIT 10`;
+      conn.query({sql: sqlAfter, timeout: 60000}, (err, afterResults) => {
+          if (err) {
+              console.error(err);
+              return res.status(500).json({ error: 'Error fetching photos for the current day' });
+          }
+
+          // คำนวณหาความแตกต่างในอันดับระหว่างวันก่อนหน้าและวันปัจจุบัน
+          const rankingsDiff: { imageID: any; voteScore: number; diff: number | null; rank_previous: number; rank_current: number }[] = [];
+          afterResults.forEach((afterItem: { imageID: any; voteScore: number; }, index: number) => {
+              const beforeIndex = beforeResults.findIndex((item: { imageID: any; }) => item.imageID === afterItem.imageID);
+              const rank_previous = beforeIndex !== -1 ? beforeIndex + 1 : null;
+              const rank_current = index + 1;
+              const diff = rank_previous !== null ? rank_previous - rank_current : null;
+              rankingsDiff.push({ imageID: afterItem.imageID, voteScore: afterItem.voteScore, diff, rank_previous, rank_current });
+          });
+          console.log(rankingsDiff);
+          res.json(rankingsDiff);
+      });
+  });
+});
