@@ -213,28 +213,69 @@ router.get("/all", async (req, res) => {
 
 
 
-router.get("/score/statistics/:id",(req, res) => {
-  const username = req.query.username;
-  console.log(username);
+// router.get("/score/statistics",(req, res) => {
+//   const username = req.query.username;
+//   console.log(username);
+
+//   const yesterday = new Date();
+//   yesterday.setDate(yesterday.getDate() - 7);
+//   const yesterdayDay = yesterday.getDate() + 1;
+//   console.log(yesterdayDay);
+//   const yesterdayMonth = yesterday.getMonth() + 1;
+//   const yesterdayYear = yesterday.getFullYear();
+//   const formattedyesterday= `${yesterdayYear}-${yesterdayMonth}-${yesterdayDay}`;
+
+//   const currentDate = new Date();
+//   const day = currentDate.getDate();
+//   const month = currentDate.getMonth() + 1;
+//   const year = currentDate.getFullYear();
+//   const formattedDate = `${year}-${month}-${day}`
+//   console.log(formattedDate);
+
+//   const sql: string = `select * from vote join image on vote.imageID = image.imageID 
+//   join user on image.userID = user.userID where user.username = ? order by image.imageID`;
+//   conn.query(sql,[username],(err, results) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).send('Internal Server Error');
+//       return;
+//     }
+
+//     res.json(results);
+//     console.log(results);
+//   })
+
+// });
+
+
+router.get("/score/statistics/:id", (req, res) => {
+  const userID = req.params.id;
+  console.log(userID);
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 7);
-  const yesterdayDay = yesterday.getDate() + 1;
+  const yesterdayDay = yesterday.getDate();
   console.log(yesterdayDay);
   const yesterdayMonth = yesterday.getMonth() + 1;
   const yesterdayYear = yesterday.getFullYear();
-  const formattedyesterday= `${yesterdayYear}-${yesterdayMonth}-${yesterdayDay}`;
+  const formattedYesterday = `${yesterdayYear}-${yesterdayMonth}-${yesterdayDay}`;
 
   const currentDate = new Date();
   const day = currentDate.getDate();
   const month = currentDate.getMonth() + 1;
   const year = currentDate.getFullYear();
-  const formattedDate = `${year}-${month}-${day}`
+  const formattedDate = `${year}-${month}-${day}`;
   console.log(formattedDate);
 
-  const sql: string = `select * from vote join image on vote.imageID = image.imageID 
-  join user on image.userID = user.userID where user.username = ? order by image.imageID`;
-  conn.query(sql,[username],(err, results) => {
+  const sql = `SELECT * 
+              FROM vote 
+              JOIN image ON vote.imageID = image.imageID 
+              JOIN user ON image.userID = user.userID 
+              WHERE user.userID = ? 
+              AND vote.voteDate BETWEEN 2024-3-4 AND CURRENT_DATE()
+              ORDER BY image.imageID`;
+
+  conn.query(sql, [userID], (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).send('Internal Server Error');
@@ -243,11 +284,8 @@ router.get("/score/statistics/:id",(req, res) => {
 
     res.json(results);
     console.log(results);
-  })
-
+  });
 });
-
-
 
 
 // router.post("/voteimage/elo/:imageID_1/:imageID_2/:voteCount1/:voteCount2", async (req, res) => {
