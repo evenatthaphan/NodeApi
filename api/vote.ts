@@ -211,6 +211,40 @@ router.get("/all", async (req, res) => {
 
 
 
+router.get("/score/statistics",(req, res) => {
+  const username = req.query.username;
+  console.log(username);
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 7);
+  const yesterdayDay = yesterday.getDate();
+  console.log(yesterdayDay);
+  const yesterdayMonth = yesterday.getMonth() + 1;
+  const yesterdayYear = yesterday.getFullYear();
+  const formattedyesterday= `${yesterdayYear}-${yesterdayMonth}-${yesterdayDay}`;
+
+  const currentDate = new Date();
+  const day = currentDate.getDate();
+  const month = currentDate.getMonth() + 1;
+  const year = currentDate.getFullYear();
+  const formattedDate = `${year}-${month}-${day}`
+  console.log(formattedDate);
+
+  const sql: string = `select * from vote join image on vote.imageID = image.imageID 
+  join user on image.userID = user.userID where user.username = ? order by image.imageID`;
+  conn.query(sql,[username],(err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    res.json(results);
+    console.log(results);
+  })
+
+});
+
 // router.post("/voteimage/elo/:imageID_1/:imageID_2/:voteCount1/:voteCount2", async (req, res) => {
 //   const imageID_1 = req.params.imageID_1;
 //   const imageID_2 = req.params.imageID_2;
