@@ -249,8 +249,8 @@ router.get("/all", async (req, res) => {
 
 
 router.get("/score/statistics/:id", (req, res) => {
-  const userID = req.params.id;
-  console.log(userID);
+  const imageID = req.params.id;
+  console.log(imageID);
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 7);
@@ -275,7 +275,7 @@ router.get("/score/statistics/:id", (req, res) => {
               AND vote.voteDate BETWEEN 2024-3-4 AND CURRENT_DATE()
               ORDER BY image.imageID`;
 
-  conn.query(sql, [userID], (err, results) => {
+  conn.query(sql, [imageID], (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).send('Internal Server Error');
