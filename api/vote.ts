@@ -245,6 +245,9 @@ router.get("/score/statistics",(req, res) => {
 
 });
 
+
+
+
 // router.post("/voteimage/elo/:imageID_1/:imageID_2/:voteCount1/:voteCount2", async (req, res) => {
 //   const imageID_1 = req.params.imageID_1;
 //   const imageID_2 = req.params.imageID_2;
