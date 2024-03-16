@@ -95,3 +95,39 @@ router.get("/top10noid", async (req, res) => {
   });
   // res.send("Method GET in index.ts");
 });
+
+
+router.get("/chart", async (req, res) => {
+  const sql = "SELECT DISTINCT userID, imageID, voteCount ,ROW_NUMBER() OVER (ORDER BY voteCount DESC) AS point FROM image";
+  conn.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error executing SQL query:", err);
+      res.status(500).send("Internal server error");
+    } else {
+      res.status(200).json(result);
+      console.log("Query result:", JSON.stringify(result));
+    }
+  });
+});
+
+router.get("/rank", async (req, res) => {
+  const sql = 
+    `SELECT imageID, voteScore, ROW_NUMBER() OVER (ORDER BY voteScore DESC) AS rankk
+    FROM vote
+    WHERE (imageID, voteDate) IN (
+        SELECT imageID, MAX(voteDate)
+        FROM vote
+        WHERE voteDate < CURRENT_DATE
+        GROUP BY imageID
+    )`;
+  
+  conn.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error executing SQL query:", err);
+      res.status(500).send("Internal server error");
+    } else {
+      res.status(200).json(result);
+      console.log("Query result:", JSON.stringify(result));
+    }
+  });
+});
