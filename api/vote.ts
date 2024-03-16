@@ -271,7 +271,7 @@ router.get("/score/statistics/:id", (req, res) => {
               FROM vote 
               JOIN image ON vote.imageID = image.imageID 
               JOIN user ON image.userID = user.userID 
-              WHERE user.userID = ? 
+              WHERE image.imageID = ? 
               AND vote.voteDate BETWEEN 2024-3-4 AND CURRENT_DATE()
               ORDER BY image.imageID`;
 
