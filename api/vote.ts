@@ -61,7 +61,7 @@ router.post("/voteimage/elo", async (req, res) => {
             const year = currentDate.getFullYear();
             const formattedDate = `${year}-${month}-${day}`;
             console.log(formattedDate);
-            
+
             conn.query(
               "select voteDate from vote where voteDate = ? and imageID = ?",
               [formattedDate, result1[0].imageID],
@@ -200,7 +200,6 @@ router.post("/voteimage/elo", async (req, res) => {
   );
 });
 
-
 router.get("/all", async (req, res) => {
   const sql = "select * from vote";
   conn.query(sql, (err, result) => {
@@ -210,8 +209,6 @@ router.get("/all", async (req, res) => {
   });
   // res.send("Method GET in index.ts");
 });
-
-
 
 // router.get("/score/statistics",(req, res) => {
 //   const username = req.query.username;
@@ -232,7 +229,7 @@ router.get("/all", async (req, res) => {
 //   const formattedDate = `${year}-${month}-${day}`
 //   console.log(formattedDate);
 
-//   const sql: string = `select * from vote join image on vote.imageID = image.imageID 
+//   const sql: string = `select * from vote join image on vote.imageID = image.imageID
 //   join user on image.userID = user.userID where user.username = ? order by image.imageID`;
 //   conn.query(sql,[username],(err, results) => {
 //     if (err) {
@@ -247,10 +244,9 @@ router.get("/all", async (req, res) => {
 
 // });
 
-
-router.get("/statistics", (req, res) => {
-  const imageID = req.query.imageID;
-  console.log(imageID);
+router.get("/score/statistics/:id", (req, res) => {
+  const userID = req.params.id;
+  console.log(userID);
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 7);
@@ -268,17 +264,17 @@ router.get("/statistics", (req, res) => {
   console.log(formattedDate);
 
   const sql = `SELECT * 
-              FROM vote 
-              JOIN image ON vote.imageID = image.imageID 
-              JOIN user ON image.userID = user.userID 
-              WHERE image.imageID = ? 
-              AND vote.voteDate BETWEEN 2024-3-4 AND CURRENT_DATE()
-              ORDER BY image.imageID`;
+  FROM vote 
+  JOIN image ON vote.imageID = image.imageID 
+  JOIN user ON image.userID = user.userID 
+  WHERE user.userID = ? 
+  AND vote.voteDate BETWEEN CURRENT_DATE() - 7 AND CURRENT_DATE()
+  ORDER BY image.imageID`;
 
-  conn.query(sql, [imageID], (err, results) => {
+  conn.query(sql, [userID], (err, results) => {
     if (err) {
       console.error(err);
-      res.status(500).send('Internal Server Error');
+      res.status(500).send("Internal Server Error");
       return;
     }
 
@@ -286,7 +282,6 @@ router.get("/statistics", (req, res) => {
     console.log(results);
   });
 });
-
 
 // router.post("/voteimage/elo/:imageID_1/:imageID_2/:voteCount1/:voteCount2", async (req, res) => {
 //   const imageID_1 = req.params.imageID_1;
