@@ -56,7 +56,7 @@ router.post("/voteimage/elo", async (req, res) => {
             console.log("rp2=" + rp2);
 
             const currentDate = new Date();
-            const day = currentDate.getDate() + 1;
+            const day = currentDate.getDate();
             const month = currentDate.getMonth() + 1;
             const year = currentDate.getFullYear();
             const formattedDate = `${year}-${month}-${day}`;
