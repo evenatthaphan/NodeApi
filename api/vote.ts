@@ -73,7 +73,7 @@ router.post("/voteimage/elo", async (req, res) => {
                 } else {
                   if (result3.length == 0) {
                     const sql =
-                      "insert into `vote` (`imageID`, `voteDate`, `voteScore`) values (?, ?, ?)";
+                      "insert into `vote` (`imageID`, `voteDate`, `voteScore`) values (?, CURRENT_DATE(), ?)";
                     conn.query(
                       sql,
                       [imageID_1, formattedDate, rp1],
@@ -99,7 +99,7 @@ router.post("/voteimage/elo", async (req, res) => {
                     );
                   } else {
                     const sql =
-                      "update `vote` set `voteScore` = ? where `imageID` = ? and `voteDate` = ?";
+                      "update `vote` set `voteScore` = ? where `imageID` = ? and `voteDate` = CURRENT_DATE()";
                     conn.query(
                       sql,
                       [rp1, imageID_1, formattedDate],
@@ -139,7 +139,7 @@ router.post("/voteimage/elo", async (req, res) => {
                 } else {
                   if (result4.length == 0) {
                     const sql =
-                      "insert into `vote` (`imageID`, `voteDate`, `voteScore`) values (?, ?, ?)";
+                      "insert into `vote` (`imageID`, `voteDate`, `voteScore`) values (?, CURRENT_DATE(), ?)";
                     conn.query(
                       sql,
                       [imageID_2, formattedDate, rp2],
@@ -165,7 +165,7 @@ router.post("/voteimage/elo", async (req, res) => {
                     );
                   } else {
                     const sql =
-                      "update `vote` set `voteScore` = ? where `imageID` = ?  and `voteDate` = ?";
+                      "update `vote` set `voteScore` = ? where `imageID` = ?  and `voteDate` = CURRENT_DATE()";
                     conn.query(
                       sql,
                       [rp2, imageID_2, formattedDate],
