@@ -55,16 +55,16 @@ router.post("/voteimage/elo", async (req, res) => {
             console.log("rp1=" + rp1);
             console.log("rp2=" + rp2);
 
-            const currentDate = new Date();
-            const day = currentDate.getDate();
-            const month = currentDate.getMonth() + 1;
-            const year = currentDate.getFullYear();
-            const formattedDate = `${year}-${month}-${day}`;
-            console.log(formattedDate);
+            // const currentDate = new Date();
+            // const day = currentDate.getDate();
+            // const month = currentDate.getMonth() + 1;
+            // const year = currentDate.getFullYear();
+            // const formattedDate = `${year}-${month}-${day}`;
+            // console.log(formattedDate);
 
             conn.query(
-              "select voteDate from vote where voteDate = ? and imageID = ?",
-              [formattedDate, result1[0].imageID],
+              "select voteDate from vote where voteDate = CURDATE() and imageID = ?",
+              [result1[0].imageID],
               (error, result3) => {
                 if (error) {
                   return res.status(500).json({
@@ -73,10 +73,10 @@ router.post("/voteimage/elo", async (req, res) => {
                 } else {
                   if (result3.length == 0) {
                     const sql =
-                      "insert into `vote` (`imageID`, `voteDate`, `voteScore`) values (?, ?, ?)";
+                      "insert into `vote` (`imageID`, `voteDate`, `voteScore`) values (?, NOW(), ?)";
                     conn.query(
                       sql,
-                      [imageID_1, formattedDate, rp1],
+                      [imageID_1, rp1],
                       (err, result) => {
                         if (err) {
                           console.error("Error inserting user: ", err);
@@ -99,10 +99,10 @@ router.post("/voteimage/elo", async (req, res) => {
                     );
                   } else {
                     const sql =
-                      "update `vote` set `voteScore` = ? where `imageID` = ? and `voteDate` = ?";
+                      "update `vote` set `voteScore` = ? where `imageID` = ? and `voteDate` = CURDATE()";
                     conn.query(
                       sql,
-                      [rp1, imageID_1, formattedDate],
+                      [rp1, imageID_1],
                       (err, result) => {
                         if (err) {
                           console.error("Error inserting user: ", err);
@@ -129,8 +129,8 @@ router.post("/voteimage/elo", async (req, res) => {
             );
 
             conn.query(
-              "select voteDate from vote where voteDate = ? and imageID = ? ",
-              [formattedDate, result2[0].imageID],
+              "select voteDate from vote where voteDate = CURDATE() and imageID = ? ",
+              [result2[0].imageID],
               (error, result4) => {
                 if (error) {
                   return res.status(500).json({
@@ -139,10 +139,10 @@ router.post("/voteimage/elo", async (req, res) => {
                 } else {
                   if (result4.length == 0) {
                     const sql =
-                      "insert into `vote` (`imageID`, `voteDate`, `voteScore`) values (?, ?, ?)";
+                      "insert into `vote` (`imageID`, `voteDate`, `voteScore`) values (?, NOW(), ?)";
                     conn.query(
                       sql,
-                      [imageID_2, formattedDate, rp2],
+                      [imageID_2, rp2],
                       (err, result) => {
                         if (err) {
                           console.error("Error inserting user: ", err);
@@ -165,10 +165,10 @@ router.post("/voteimage/elo", async (req, res) => {
                     );
                   } else {
                     const sql =
-                      "update `vote` set `voteScore` = ? where `imageID` = ?  and `voteDate` = ?";
+                      "update `vote` set `voteScore` = ? where `imageID` = ?  and `voteDate` = CURDATE()";
                     conn.query(
                       sql,
-                      [rp2, imageID_2, formattedDate],
+                      [rp2, imageID_2],
                       (err, result) => {
                         if (err) {
                           console.error("Error inserting user: ", err);
