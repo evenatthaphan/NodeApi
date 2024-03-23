@@ -40,7 +40,9 @@ class FileMiddleware {
 }
 
 const fileUpload = new FileMiddleware(); 
-router.post("/", fileUpload.diskLoader.single("Photo"), async (req, res) => {
+router.post("/:id", fileUpload.diskLoader.single("Photo"), async (req, res) => {
+  const userId = req.params.id;
+  console.log("UserID:", userId);
   try {
     // อัพโหลดรูปภาพไปยัง Firebase Storage
     const filename = Date.now() + "-" + Math.round(Math.random() * 1000) + ".png";
