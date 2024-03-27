@@ -89,3 +89,43 @@ router.get("/list", async (req, res) => {
     console.log(JSON.stringify(result));
   });
 });
+
+
+router.get("/show:userID", async (req, res) => {
+  const id = +req.params.userID;
+  let user: UserPostRequest = req.body;
+  const sql = "select * from user where userID = ?";
+  conn.query(sql, (err, result) => {
+    res.status(200);
+    res.json(result);
+    console.log(JSON.stringify(result));
+  });
+});
+
+
+router.get('/checkUploads/:userId', async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    // ส่งคำสั่ง SQL query เพื่อดึงข้อมูลรูปภาพทั้งหมดของผู้ใช้งานคนนี้
+    const sql = `SELECT * FROM image WHERE userID = ?`;
+    conn.query(sql, [userId], (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ error: 'Error querying database.' });
+      }
+
+      // ตรวจสอบจำนวนรูปภาพที่ผู้ใช้งานคนนี้ได้อัปโหลดแล้ว
+      if (results.length >= 5) {
+        // หากมีรูปภาพมากกว่าหรือเท่ากับ 5 รูป ให้ส่งข้อความว่างั้นไม่สามารถอัปโหลดรูปภาพเพิ่มได้
+        return res.status(403).json({ message: 'Cannot upload more than 5 images.' });
+      }
+
+      // หากยังไม่ถึง 5 รูป ให้ส่งข้อความว่ายังสามารถอัปโหลดรูปภาพได้อีก
+      return res.status(200).json({ message: 'You can still upload images.' });
+    });
+  } catch (error) {
+    console.error('Error checking upload status:', error);
+    return res.status(500).json({ error: 'Error checking upload status.' });
+  }
+});
