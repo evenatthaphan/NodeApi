@@ -25,7 +25,7 @@ app.use(bodyParser.text());
 app.use(bodyParser.json()); 
 
 app.use("/show", image);
-// app.use("/", image)
+app.use("/", image)
 
 app.use("/rank", image);
 
