@@ -3,6 +3,7 @@ import path from "path";
 import multer from "multer";
 import { conn } from "../dbconnect";
 import { ImagePostRequest } from "../model/data_post_request";
+import  mysql from "mysql"
 // import mysql from "mysql";
 
 export const router = express.Router();
@@ -40,9 +41,10 @@ class FileMiddleware {
 }
 
 const fileUpload = new FileMiddleware(); 
-router.post("/:id", fileUpload.diskLoader.single("Photo"), async (req, res) => {
-  const userId = req.params.id;
+router.post("/", fileUpload.diskLoader.single("Photo"), async (req, res) => {
+  const userId = req.body.UserID;
   console.log("UserID:", userId);
+
   try {
     // อัพโหลดรูปภาพไปยัง Firebase Storage
     const filename = Date.now() + "-" + Math.round(Math.random() * 1000) + ".png";
@@ -53,11 +55,18 @@ router.post("/:id", fileUpload.diskLoader.single("Photo"), async (req, res) => {
 
     // บันทึกรูปภาพลงใน Firebase Storage และรับ URL ของรูปภาพ
     const Photo = url;
+    const count = 10;
+    console.log(Photo);
+    console.log(count);
+    
 
     // บันทึกข้อมูลลงในฐานข้อมูล MySQL
-    const UserID: ImagePostRequest = req.body;
-    const sql = "INSERT INTO image (imageID, userID, imageURL, uploadDate, imageName) VALUES (?, ?, ?, NOW(), ? )";
-    conn.query(sql, [UserID.userID, Photo ,UserID.imageName], (err, result) => {
+    const UserID = req.body;
+    // console.log("jju"+UserID);
+    
+    let sql = "INSERT INTO image (userID, imageURL, uploadDate, voteCount, imageName) VALUES (?, ?, NOW(), ?, ?)";
+    sql = mysql.format(sql,[req.body.UserID, url, count, req.body.imageName]);
+    conn.query(sql, (err, result) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ error: 'Error inserting user' });
