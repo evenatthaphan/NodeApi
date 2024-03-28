@@ -45,7 +45,7 @@ router.post("/", (req, res) => {
 
 
 //edit profile
-router.put("/:id", async (req, res) => {
+router.put("/edit:id", async (req, res) => {
   //1. Receive data from request
   const id = +req.params.id;
   let user: UserPostRequest = req.body;
@@ -91,7 +91,7 @@ router.get("/list", async (req, res) => {
 });
 
 
-router.get("/show:userID", async (req, res) => {
+router.get("/getuserprofile:userID", async (req, res) => {
   const id = +req.params.userID;
   let user: UserPostRequest = req.body;
   const sql = "select * from user where userID = ?";
